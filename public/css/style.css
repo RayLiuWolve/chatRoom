@@ -1,0 +1,45 @@
+html, body{
+    height: 100%;
+    width: 100%;
+    background-image: url(images/blkBg.jpg);
+}
+
+#chatRoom{
+
+    height:78vh;
+    /*width:  60%;*/
+    background-color: #BABABA;
+    overflow-y: scroll;
+    overflow-x:hidden;
+
+}
+
+#userList{
+    height: 78vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+#footer{
+    /*position: fixed;*/
+    bottom: 15px;
+    left: 35px;
+
+}
+#container-chat{
+    left: 35px;
+}
+
+#panel-chat, #panel-user{
+    margin-top: 30px;
+}
+
+#panel-chat{
+    width: 100%;
+}
+
+
+#chatHead{
+    font-size: 22px;
+}
+

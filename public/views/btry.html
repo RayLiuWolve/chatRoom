@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/signIn.css">
+    <link rel="stylesheet" href="/css/chatBox.css">
+
+
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+</head>
+<body>
+<div id="signPage">
+    <div class="container-fluid" >
+        <form class="form-signin">
+            <div class="row">
+                <div class="col-md-9">
+                     <h1 class="form-signin-heading">Join ChatRoom</h1>
+                    </div>
+                </div>
+            <input type="text" id="username" class="form-control" placeholder="User Name"  oninput="activateButton()">
+
+            <button id="getInBtn" class="btn btn-lg btn-primary btn-block disabled" onclick="sendNameAndShowChatRoom()">
+               <a href="/views/index.html">Start</a>
+            </button>
+        </form>
+    </div>
+</div>
+
+    <script src="/js/usr.js"></script>
+
+
+
+    <script>
+        function msg(){
+            var newMsgPlace = document.createElement("p");
+            //var br = document.createElement("br");
+            var newMsg = document.createTextNode("splayed in a fixed-width\n\n\n\n");
+
+            newMsgPlace.appendChild(newMsg);
+
+            document.getElementById("pe").appendChild(newMsgPlace);
+        }
+
+
+
+
+
+        function activateButton(){
+            var signVal = document.getElementById("username").value;
+            if(signVal != ""){
+                document.getElementById("getInBtn").className = "btn btn-lg btn-primary btn-block ";
+            }else{
+                document.getElementById("getInBtn").className = "btn btn-lg btn-primary btn-block  disabled";
+            }
+
+        }
+    </script>
+
+
+</body>
+</html>
+
