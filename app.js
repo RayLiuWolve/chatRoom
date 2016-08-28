@@ -44,7 +44,7 @@ io.on('connection', function (socket) {
                 messages = messages.reverse();
                 messages.forEach(function(msg){
                     msg = JSON.parse(msg);
-                    //console.log("---------------" + msg.name + ":  " +msg.speech);
+
                     socket.emit("msg",msg);
                 });
             });
