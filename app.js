@@ -28,23 +28,32 @@ io.on('connection', function (socket) {
 
     socket.on('join', function(data){   //when a new chatter join in.
         socket.name = data;
-        totalUsers++;
 
-        redisClient.sadd("chatters", data);
+        redisClient.sismember('chatters', data, function(err, reply) {
+            if (err) throw err;
+            if(!reply){
+                console.log("not exists");
+                redisClient.sadd("chatters", data);
+                totalUsers ++;
+
+            }
+            socket.broadcast.emit("userChange");
+            showName(socket);
+
+            redisClient.lrange("messages", 0, -1, function(err, messages){
+                messages = messages.reverse();
+                messages.forEach(function(msg){
+                    msg = JSON.parse(msg);
+                    //console.log("---------------" + msg.name + ":  " +msg.speech);
+                    socket.emit("msg",msg);
+                });
+            });
+        });
+
 
         console.log('user '+socket.name + ' join the chatroom!');
 
-        socket.broadcast.emit("userChange");
-        showName(socket);
 
-        redisClient.lrange("messages", 0, -1, function(err, messages){
-            messages = messages.reverse();
-            messages.forEach(function(msg){
-               msg = JSON.parse(msg);
-               //console.log("---------------" + msg.name + ":  " +msg.speech);
-               socket.emit("msg",msg);
-            });
-        });
     });
 
 
@@ -65,6 +74,8 @@ io.on('connection', function (socket) {
 
     socket.on('disconnect', function(){
        console.log("user "+ socket.name + " leave chatroom!");
+
+
        totalUsers--;
 
        redisClient.srem("chatters", socket.name);
