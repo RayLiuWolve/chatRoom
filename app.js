@@ -12,51 +12,28 @@ var server = http.createServer(app);
 
 var io = require('socket.io')(server);
 var path = require('path');
-var totalUsers = 0;
 
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-
 var redis = require('redis');
 var redisClient = redis.createClient();
+var dBase = require('./kd.js');
 
 
 io.on('connection', function (socket) {
 
-    console.log("one user connected!");
+    var db = new dBase(redisClient, socket);
 
     socket.on('join', function(data){   //when a new chatter join in.
         socket.name = data;
+        db.setSocketName(data);
 
-        redisClient.sismember('chatters', data, function(err, reply) {
-            if (err) throw err;
-            if(!reply){
-                console.log("not exists");
-                redisClient.sadd("chatters", data);
-                totalUsers ++;
-
-            }
-            socket.broadcast.emit("userChange");
-            showName(socket);
-
-            redisClient.lrange("messages", 0, -1, function(err, messages){
-                messages = messages.reverse();
-                messages.forEach(function(msg){
-                    msg = JSON.parse(msg);
-
-                    socket.emit("msg",msg);
-                });
-            });
-        });
-
-
+        db.addChatter(data);
         console.log('user '+socket.name + ' join the chatroom!');
 
 
     });
-
-
 
     socket.on('msg', function(data){
         console.log(data.name + "  !!!");
@@ -65,36 +42,15 @@ io.on('connection', function (socket) {
 
         var msg = JSON.stringify({name:data.name, speech:data.speech, time: data.time});
 
-        redisClient.lpush("messages", msg, function(err, response){
-            redisClient.ltrim("messages", 0, 19);
-        });
-
-
+        db.saveMsg(msg);
     });
 
     socket.on('disconnect', function(){
        console.log("user "+ socket.name + " leave chatroom!");
 
-
-       totalUsers--;
-
-       redisClient.srem("chatters", socket.name);
-       socket.broadcast.emit("userChange");
-
-       showName(socket);
+        db.rmName();
     })
 });
-
-function showName(socket) {
-    redisClient.smembers('chatters', function(err, names) {
-        names.forEach(function(name){
-            socket.emit('add one', {name: name, num:totalUsers});
-            socket.broadcast.emit("add one", {name: name, num:totalUsers});
-        });
-    });
-
-}
-
 
 
 app.get('/', function(req, res){
